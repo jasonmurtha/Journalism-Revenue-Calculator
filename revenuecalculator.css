@@ -1,37 +1,40 @@
-    .call{
-        color:#f605e8;
-    }
-    .btn-primary{
-        background-color:black;
-        border-color:black;
-    }
-    .btn-primary:active, .btn-primary:hover{
-        background-color:#f605e8;
-        border-color:black;
-    }
-    .border-primary{
-        border-color:#7EA2AA !important;
-    }
-    .bg-light-grey{
-        background-color: #f3f4f8 ;
-    }
-    input[type='range']::-webkit-slider-runnable-track {
-        background: #000;
-    }
-
-    input[type='range']::-webkit-slider-thumb {
-        background: #f605e8;
-    }
-    input[type='range']::-moz-range-track {
+.call{
+    color:#f605e8;
+}
+.btn-primary{
+    background-color:black;
+    border-color:black;
+}
+.btn-primary:active, .btn-primary:hover{
+    background-color:#f605e8;
+    border-color:black;
+}
+.border-primary{
+    border-color:#7EA2AA !important;
+}
+.bg-light-grey{
+    background-color: #f3f4f8 ;
+}
+input[type='range']::-webkit-slider-runnable-track {
     background: #000;
-    }
+}
 
-    input[type='range']::-moz-range-thumb {
+input[type='range']::-webkit-slider-thumb {
     background: #f605e8;
-    }
-    .chartContainer{
-        height:350px
-    }
-    .nav-link{
-        cursor: pointer;
-    }
+}
+input[type='range']::-moz-range-track {
+    background: #000;
+}
+
+input[type='range']::-moz-range-thumb {
+    background: #f605e8;
+}
+.chartContainer{
+    height:350px
+}
+.nav-link{
+    cursor: pointer;
+}
+.navbar{
+    background-color: #4169E1;
+}
