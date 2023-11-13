@@ -234,7 +234,7 @@ function updateTable(){
 
 function getRandomColorAndRemove() {
     if(colorScheme.length === 0) {
-        return null; // or any other fallback behavior
+        return "#4169E1"; 
     }
     const randomIndex = Math.floor(Math.random() * colorScheme.length);
     const selectedColor = colorScheme[randomIndex];
