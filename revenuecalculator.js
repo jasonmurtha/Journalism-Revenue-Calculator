@@ -162,59 +162,17 @@ function updateTable(){
     }
 
     revenueSources.forEach(function(currentElement) { 
-        let cumulativeRevenue = 0; // Initialize cumulative revenue at the start of the year
-        let targetRevenue = 0;
 
         for (let i = 0; i < tableBody.rows.length; i++) {
-            // Reset cumulative revenue at the beginning of a new year (Q1 and Q5)
-            if (i === 0 || i === 4) {
-                cumulativeRevenue = 0;
-                targetRevenue = 0;
-            }
 
             
             
-            targetRevenue += parseFloat(tableBody.rows[i].cells[1].innerText.replace(/[$,]/g, '')) * (currentElement.revPercent / 100);
-            let additionalSalesNeeded = 0;
-            
-             // calculate sales needed
-             switch(currentElement.saleFreq){
-                case "one-time": 
-                    quarterlyRevDivisor = 1; 
-                    saleText = 'sales';
-                    break;
-                case "yearly":
-                    quarterlyRevDivisor = 1; 
-                    saleText = 'sales';
-                    break;
-                case "quarterly":
-                    quarterlyRevDivisor = 1; 
-                    saleText = 'actives';
-                    break;
-                case "monthly":
-                    quarterlyRevDivisor = 3; 
-                    saleText = 'actives';
-                    break;
-                default:
-                    quarterlyRevDivisor = 1; break;   
-            }
+            targetRevenue = parseFloat(tableBody.rows[i].cells[1].innerText.replace(/[$,]/g, '')) * (currentElement.revPercent / 100);
 
-            // Calculate additional sales needed for this quarter
-            if (cumulativeRevenue < targetRevenue) {
-                additionalSalesNeeded = Math.ceil(((targetRevenue - cumulativeRevenue) / currentElement.saleValue) / quarterlyRevDivisor);
-                cumulativeRevenue += additionalSalesNeeded * currentElement.saleValue * quarterlyRevDivisor;
-            }
-
-           
-            salesNeeded = Math.ceil(((parseFloat(tableBody.rows[i].cells[1].innerText.replace(/[$,]/g, '')) * (currentElement.revPercent / 100)) / currentElement.saleValue ) / quarterlyRevDivisor);
-            thisRevenue = additionalSalesNeeded * currentElement.saleValue * quarterlyRevDivisor;
             
             // Create a new cell in the current row
             const newCell = tableBody.rows[i].insertCell(-1);
-            newCell.textContent = thisRevenue.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
-            newCell.setAttribute('data-bs-toggle', 'tooltip');
-            newCell.setAttribute('data-bs-placement', 'left')
-            newCell.setAttribute('title', additionalSalesNeeded + ' ' + saleText); 
+            newCell.textContent = targetRevenue.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
 
         }
 
@@ -225,8 +183,7 @@ function updateTable(){
         newHeaderCell.textContent = currentElement.revSource + ' Revenue'; 
         tableHead.rows[0].appendChild(newHeaderCell);
     })
-    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]')) 
-    tooltipTriggerList.map(function (tooltipTriggerEl) { return new bootstrap.Tooltip(tooltipTriggerEl) })
+
 }
 
 
