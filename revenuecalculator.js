@@ -216,8 +216,6 @@ function updateTable(){
             newCell.setAttribute('data-bs-placement', 'left')
             newCell.setAttribute('title', additionalSalesNeeded + ' ' + saleText); 
 
-            console.log(i + ' '+ additionalSalesNeeded + ' ' + cumulativeRevenue + ' ' + targetRevenue);
-
         }
 
         // Add a new header cell to the table header
@@ -509,14 +507,13 @@ function decodeDataFromUrlParameter() {
     }
     return null;
 }
+
 function saveToLocalStorage(object){
     localStorage.setItem('data', object);
-
 }
 
 function resetPage(){
     revenueSources = [];
-    console.log(revenueSources);
     document.getElementById('mscRange').value = 50000;
     document.getElementById('growthRate').value = 20;
 
