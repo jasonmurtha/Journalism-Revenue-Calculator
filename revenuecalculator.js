@@ -162,12 +162,23 @@ function updateTable(){
     }
 
     revenueSources.forEach(function(currentElement) { 
+        let cumulativeRevenue = 0; // Initialize cumulative revenue at the start of the year
+        let targetRevenue = 0;
+
         for (let i = 0; i < tableBody.rows.length; i++) {
-            // Create a new cell in the current row
-            const newCell = tableBody.rows[i].insertCell(-1);
+            // Reset cumulative revenue at the beginning of a new year (Q1 and Q5)
+            if (i === 0 || i === 4) {
+                cumulativeRevenue = 0;
+                targetRevenue = 0;
+            }
+
             
-            // calculate sales needed
-            switch(currentElement.saleFreq){
+            
+            targetRevenue += parseFloat(tableBody.rows[i].cells[1].innerText.replace(/[$,]/g, '')) * (currentElement.revPercent / 100);
+            let additionalSalesNeeded = 0;
+            
+             // calculate sales needed
+             switch(currentElement.saleFreq){
                 case "one-time": 
                     quarterlyRevDivisor = 1; 
                     saleText = 'sales';
@@ -187,20 +198,31 @@ function updateTable(){
                 default:
                     quarterlyRevDivisor = 1; break;   
             }
+
+            // Calculate additional sales needed for this quarter
+            if (cumulativeRevenue < targetRevenue) {
+                additionalSalesNeeded = Math.ceil(((targetRevenue - cumulativeRevenue) / currentElement.saleValue) / quarterlyRevDivisor);
+                cumulativeRevenue += additionalSalesNeeded * currentElement.saleValue * quarterlyRevDivisor;
+            }
+
+           
             salesNeeded = Math.ceil(((parseFloat(tableBody.rows[i].cells[1].innerText.replace(/[$,]/g, '')) * (currentElement.revPercent / 100)) / currentElement.saleValue ) / quarterlyRevDivisor);
-            thisRevenue = salesNeeded * currentElement.saleValue * quarterlyRevDivisor;
-            // Set the text content of the new cell (modify as needed)
+            thisRevenue = additionalSalesNeeded * currentElement.saleValue * quarterlyRevDivisor;
+            
+            // Create a new cell in the current row
+            const newCell = tableBody.rows[i].insertCell(-1);
             newCell.textContent = thisRevenue.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
             newCell.setAttribute('data-bs-toggle', 'tooltip');
             newCell.setAttribute('data-bs-placement', 'left')
-            newCell.setAttribute('title', salesNeeded + ' ' + saleText); 
+            newCell.setAttribute('title', additionalSalesNeeded + ' ' + saleText); 
+
+            console.log(i + ' '+ additionalSalesNeeded + ' ' + cumulativeRevenue + ' ' + targetRevenue);
 
         }
 
         // Add a new header cell to the table header
         const tableHead = document.getElementById('growthRateTable').getElementsByTagName('thead')[0];
         const newHeaderCell = document.createElement('th');
-        //const newHeaderCell = tableHead.rows[0].insertCell(-1);
         newHeaderCell.setAttribute('scope', 'col');
         newHeaderCell.textContent = currentElement.revSource + ' Revenue'; 
         tableHead.rows[0].appendChild(newHeaderCell);
