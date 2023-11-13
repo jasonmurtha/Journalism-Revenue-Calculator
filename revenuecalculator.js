@@ -540,12 +540,12 @@ function loadFromLocalStorage(){
     return JSON.parse(storedObjectString);
 }
 
-function copyToClipboardFallback() {
+function copyToClipboardFallback(data) {
     // Create a temporary hidden text element
     const tempInput = document.createElement('input');
     tempInput.style.position = 'absolute';
     tempInput.style.left = '-9999px';
-    tempInput.value = window.location.href;
+    tempInput.value = data;
     
     // Append it to the body, select the text, and copy it
     document.body.appendChild(tempInput);
@@ -553,8 +553,7 @@ function copyToClipboardFallback() {
     
     // Attempt to copy to the clipboard
     try {
-        var successful = document.execCommand('copy');
-        var msg = successful ? 'successful' : 'unsuccessful';
+        document.execCommand('copy');
     } catch (err) {
         console.error('unable to copy', err);
     }
@@ -569,11 +568,11 @@ function copyToClipboard(data) {
         }).catch(function(error) {
             console.error('Copy failed', error);
             // Fallback if Clipboard API fails
-            copyToClipboardFallback();
+            copyToClipboardFallback(data);
         });
     } else {
         // Fallback for older browsers
-        copyToClipboardFallback();
+        copyToClipboardFallback(data);
     }
 }
 })();
