@@ -542,13 +542,14 @@ function loadFromLocalStorage(){
 
 function copyToClipboardFallback(data) {
     // Create a temporary hidden text element
-    const tempInput = document.createElement('input');
+    const tempInput = document.createElement('textarea');
     tempInput.style.position = 'absolute';
     tempInput.style.left = '-9999px';
     tempInput.value = data;
     
     // Append it to the body, select the text, and copy it
     document.body.appendChild(tempInput);
+    tempInput.focus();
     tempInput.select();
     
     // Attempt to copy to the clipboard
