@@ -243,17 +243,6 @@ function getRandomColorAndRemove() {
 }
 
 
-function arrayToCSV(arr) {
-    if (arr.length === 0) return '';
-
-    const columnDelimiter = ',';
-    const lineDelimiter = '\n';
-
-    const csv = arr.map(row => keys.map(key => `"${row[key]}"`).join(columnDelimiter));
-    return csv.join(lineDelimiter);
-}
-
-
 document.addEventListener('DOMContentLoaded', function() {
     const currentState = decodeDataFromUrlParameter();
     if(currentState){
