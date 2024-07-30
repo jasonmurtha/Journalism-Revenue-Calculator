@@ -198,8 +198,8 @@ function getRandomColorAndRemove() {
 }
 
 
-document.addEventListener('DOMContentLoaded', function() {
-    const currentState = decodeDataFromUrlParameter();
+document.addEventListener('DOMContentLoaded', async function() {
+    const currentState = await decodeDataFromUrlParameter();
     if(currentState){
         otherData = currentState.pop();
         document.getElementById('mscRange').value = otherData[0].msc;
@@ -419,7 +419,7 @@ function prepareCSV() {
     
 }
 
-function updateUrlWithEncodedArray(revObject) {
+    async function updateUrlWithEncodedArray(revObject) {
     // Convert the array of objects to a JSON string
     // first push the current msc and growth rate
     const msc = document.getElementById('mscRange').value;
@@ -428,30 +428,50 @@ function updateUrlWithEncodedArray(revObject) {
             msc: msc,
             growthRate: growthRate,
     }];
-    revStored = [...revObject];
-    revStored.push(otherData);
+    const revStored = [...revObject, otherData];
 
     const jsonString = JSON.stringify(revStored);
 
     // save to local storage
     saveToLocalStorage(jsonString);
     
+    // use CompressionStream to gzip the data before appending to the URL
+
+    const stream = new Blob([jsonString], {
+        type: 'application/json',
+    }).stream();
+
+    // gzip stream
+    const compressedReadableStream = stream.pipeThrough(
+        new CompressionStream("gzip")
+    );
+
+    const compressedResponse = await new Response(compressedReadableStream);
+
+    // Get response Blob
+    const blob = await compressedResponse.blob();
+    // Get the ArrayBuffer
+    const buffer = await blob.arrayBuffer();
+
+    // convert ArrayBuffer to base64 encoded string
+    const base64Encoded = btoa(
+        String.fromCharCode(...new Uint8Array(buffer))
+    );
+
     // URI-encode the string to escape characters that are not URL-safe
-    const encodedUriComponent = encodeURIComponent(jsonString);
-    
-    // Base64 encode the URI-encoded string
-    const base64Encoded = btoa(encodedUriComponent);
-    
+    const encodedUriComponent = encodeURIComponent(base64Encoded);
+  
     // Construct the new URL with the Base64 encoded string as a query parameter
-    const newUrl = `${window.location.protocol}//${window.location.host}${window.location.pathname}?data=${base64Encoded}`;
+    const newUrl = `${window.location.protocol}//${window.location.host}${window.location.pathname}?datav2=${encodedUriComponent}`;
 
     // Update the URL without reloading the page using the history API
     window.history.pushState({ path: newUrl }, '', newUrl);
 }
 
-function decodeDataFromUrlParameter() {
+async function decodeDataFromUrlParameter() {
     const queryParams = new URLSearchParams(window.location.search);
     const encodedData = queryParams.get('data');
+    const encodedDatav2 = queryParams.get('datav2');
     if (encodedData) {
         // Decode from Base64 then JSON parse the result
         try {
@@ -462,9 +482,42 @@ function decodeDataFromUrlParameter() {
         return null;
         }
     }
+    else if(encodedDatav2){
+        try {
+            const bytes = b64decode(decodeURIComponent(encodedDatav2));
+            const stream = new Blob([bytes], {
+                type: "application/gzip",
+            }).stream();
+
+            const decompressedReadableStream = stream.pipeThrough(
+                new DecompressionStream("gzip")
+            );
+            const resp = await new Response(decompressedReadableStream);
+            const blob = await resp.blob(); 
+            
+            const jsonString = JSON.parse(await blob.text());
+
+            return jsonString;
+        } catch (e) {
+            console.error('Decoding failed', e);
+            return null;
+        }
+    }
     return null;
 }
 
+
+function b64decode(str){
+    const binary_string = window.atob(str);
+    const len = binary_string.length;
+    const bytes = new Uint8Array(new ArrayBuffer(len));
+    for (let i = 0; i < len; i++) {
+      bytes[i] = binary_string.charCodeAt(i);
+    }
+    return bytes;
+  }
+
+  
 function saveToLocalStorage(object){
     localStorage.setItem('data', object);
 }
