@@ -66,7 +66,7 @@ maximumFractionDigits: 0, })}/sale, ${currentElement.saleFreq}.`;
 
         const textP = document.createElement('p');
         textP.className = 'card-text';
-        textP.textContent = `You'll need ${currentElement.salesNeeded.toLocaleString('en-US')} active customers. At a conversion rate of ${currentElement.conversionRate}%, you'll likley need ${currentElement.eventsNeeded.toLocaleString('en-US')} proceeding events.`;
+        textP.textContent = `You'll need ${currentElement.salesNeeded.toLocaleString('en-US')} active customers. At a conversion rate of ${currentElement.conversionRate}%, you'll likely need ${currentElement.eventsNeeded.toLocaleString('en-US')} proceeding events.`;
 
         const deleteLink = document.createElement('a');
         deleteLink.href = '#';
